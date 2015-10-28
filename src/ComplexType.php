@@ -104,6 +104,8 @@ class ComplexType extends Type
             $constructorSource .= '  parent::__construct(' . $this->buildParametersString($constructorParameters, false) . ');' . PHP_EOL;
         }
 
+		$variableAccess = $this->config->get('classVariableAccess');
+
         // Add member variables
         foreach ($this->members as $member) {
             $type = Validator::validateType($member->getType());
@@ -112,7 +114,7 @@ class ComplexType extends Type
 
             $comment = new PhpDocComment();
             $comment->setVar(PhpDocElementFactory::getVar($type, $name, ''));
-            $var = new PhpVariable('protected', $name, 'null', $comment);
+            $var = new PhpVariable($variableAccess, $name, 'null', $comment);
             $class->addVariable($var);
 
             if (!$member->getNullable()) {
@@ -183,22 +185,26 @@ class ComplexType extends Type
             $accessors[] = $setter;
         }
 
-        $constructor = new PhpFunction(
-            'public',
-            '__construct',
-            $this->buildParametersString(
-                $constructorParameters,
-                true,
-                $this->config->get('constructorParamsDefaultToNull')
-            ),
-            $constructorSource,
-            $constructorComment
-        );
-        $class->addFunction($constructor);
+		if ($this->config->get('classAddConstructor')) {
+			$constructor = new PhpFunction(
+				'public',
+				'__construct',
+				$this->buildParametersString(
+					$constructorParameters,
+					true,
+					$this->config->get('constructorParamsDefaultToNull')
+				),
+				$constructorSource,
+				$constructorComment
+			);
+			$class->addFunction($constructor);
+		}
 
-        foreach ($accessors as $accessor) {
-            $class->addFunction($accessor);
-        }
+		if ($this->config->get('classUseAccessors')) {
+			foreach ($accessors as $accessor) {
+				$class->addFunction($accessor);
+			}
+		}
 
         $this->class = $class;
     }

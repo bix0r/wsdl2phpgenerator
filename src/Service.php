@@ -186,6 +186,8 @@ class Service implements ClassGenerator
         // Add the classmap variable
         $this->class->addVariable($var);
 
+		$soapCall = $this->config->get('soapCallMethod');
+
         // Add all methods
         foreach ($this->operations as $operation) {
             $name = Validator::validateOperation($operation->getName());
@@ -198,7 +200,7 @@ class Service implements ClassGenerator
                 $comment->addParam(PhpDocElementFactory::getParam($arr['type'], $arr['name'], $arr['desc']));
             }
 
-            $source = '  return $this->__soapCall(\'' . $operation->getName() . '\', array(' . $operation->getParamStringNoTypeHints() . '));' . PHP_EOL;
+            $source = '  return $this->' . $soapCall . '(\'' . $operation->getName() . '\', array(' . $operation->getParamStringNoTypeHints() . '));' . PHP_EOL;
 
             $paramStr = $operation->getParamString($this->types);
 

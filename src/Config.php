@@ -74,7 +74,11 @@ class Config implements ConfigInterface
             'constructorParamsDefaultToNull' => false,
             'soapClientClass'               => '\SoapClient',
             'soapClientOptions'             => array(),
-            'proxy'                         => false
+            'proxy'                         => false,
+            'classUseAccessors'             => true,
+            'classAddConstructor'           => true,
+			'classVariableAccess'			=> 'protected',
+			'soapCallMethod'				=> '__soapCall',
         ));
 
         // A set of configuration options names and normalizer callables.

@@ -199,21 +199,40 @@ class Generator implements GeneratorInterface
     protected function savePhp()
     {
         $factory = new FilterFactory();
-        $filter = $factory->create($this->config);
-        $filteredService = $filter->filter($this->service);
+        $filters = $factory->create($this->config);
+		$filteredService = null;
+		foreach ($filters as $filter) {
+			$filteredService = $filter->filter($this->service);
+		}
+		if (!$filteredService) {
+			throw new Exception('No services from filter');
+		}
+
         $service = $filteredService->getClass();
         $filteredTypes = $filteredService->getTypes();
+
         if ($service == null) {
             throw new Exception('No service loaded');
         }
 
         $output = new OutputManager($this->config);
 
+		$prepareTypes = $this->config->get('typePrepareClasses');
+		if (!$prepareTypes) {
+			$prepareTypes = array();
+		}
+
         // Generate all type classes
         $types = array();
         foreach ($filteredTypes as $type) {
             $class = $type->getClass();
             if ($class != null) {
+				if (isset($prepareTypes[$class->getIdentifier()])) {
+					$func = $prepareTypes[$class->getIdentifier()];
+					if (is_callable($func)) {
+						$func($class);
+					}
+				}
                 $types[] = $class;
             }
         }

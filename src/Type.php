@@ -59,13 +59,7 @@ abstract class Type implements ClassGenerator
         $this->config = $config;
         $this->class = null;
         $this->datatype = $datatype;
-        $this->identifier = $name;
-
-        $this->phpIdentifier = Validator::validateClass($name, $this->config->get('namespaceName'));
-        $this->phpNamespacedIdentifier = $name;
-        if ($this->config->get('namespaceName')) {
-            $this->phpNamespacedIdentifier = '\\' . $this->config->get('namespaceName') . '\\' . $name;
-        }
+		$this->switchIdentifier($name);
     }
 
     /**
@@ -116,4 +110,16 @@ abstract class Type implements ClassGenerator
     {
         return $this->phpIdentifier;
     }
+
+	public function switchIdentifier($name)
+	{
+		$this->identifier = $name;
+
+		$this->phpIdentifier = Validator::validateClass($name, $this->config->get('namespaceName'));
+		$this->phpNamespacedIdentifier = $name;
+		if ($this->config->get('namespaceName')) {
+			$this->phpNamespacedIdentifier = '\\' . $this->config->get('namespaceName') . '\\' . $name;
+		}
+		return $this;
+	}
 }

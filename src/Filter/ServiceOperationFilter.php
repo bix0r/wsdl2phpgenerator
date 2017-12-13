@@ -39,6 +39,9 @@ class ServiceOperationFilter implements FilterInterface
      */
     public function filter(Service $service)
     {
+		if (!$this->methods) {
+			return $service;
+		}
         $operations = array();
         $types  = array();
         foreach ($this->methods as $method) {

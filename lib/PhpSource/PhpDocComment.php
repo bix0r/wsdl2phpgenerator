@@ -29,7 +29,7 @@ class PhpDocComment
 
     /**
      *
-     * @var array Array of PhpDocElements
+     * @var PhpDocElement[] Array of PhpDocElements
      * @access private
      */
     private $params;
@@ -60,7 +60,7 @@ class PhpDocComment
 
     /**
      *
-     * @var array Array of PhpDocElements
+     * @var PhpDocElement[] Array of PhpDocElements
      */
     private $throws;
 
@@ -70,9 +70,10 @@ class PhpDocComment
      */
     private $description;
 
-    /**
-     * Constructs the object, sets all variables to empty
-     */
+	/**
+	 * Constructs the object, sets all variables to empty
+	 * @param string $description
+	 */
     public function __construct($description = '')
     {
         $this->description = $description;
@@ -89,7 +90,7 @@ class PhpDocComment
     /**
      * Returns the generated source
      *
-     * @return string The sourcecoude of the comment
+     * @return string The sourcecode of the comment
      * @access public
      */
     public function getSource()
@@ -139,88 +140,108 @@ class PhpDocComment
             $ret = PHP_EOL . '/**' . PHP_EOL . $ret . ' */' . PHP_EOL;
         }
 
+		#$ret = preg_replace('#/\*\*\s+\* @var (\S+) (\S+)\s*\n\*/#m', '/** @var \1 \2 */', $ret);
+
         return $ret;
     }
 
     /**
      *
      * @param PhpDocElement $access Sets the new access
+	 * @return $this
      */
     public function setAccess(PhpDocElement $access)
     {
         $this->access = $access;
+		return $this;
     }
 
     /**
      *
      * @param PhpDocElement $var Sets the new var
+	 * @return $this
      */
     public function setVar(PhpDocElement $var)
     {
         $this->var = $var;
+		return $this;
     }
 
     /**
      *
      * @param PhpDocElement $package The package element
+	 * @return $this
      */
     public function setPackage(PhpDocElement $package)
     {
         $this->package = $package;
+		return $this;
     }
 
     /**
      *
      * @param PhpDocElement $author The author element
+	 * @return $this
      */
     public function setAuthor(PhpDocElement $author)
     {
         $this->author = $author;
+		return $this;
     }
 
     /**
      *
-     * @param PhpDocElement $licence The license elemnt
+     * @param PhpDocElement $licence The license element
+	 * @return $this
      */
     public function setLicence(PhpDocElement $licence)
     {
         $this->licence = $licence;
+		return $this;
     }
 
     /**
      *
      * @param PhpDocElement $return Sets the new return
+	 * @return $this
      */
     public function setReturn(PhpDocElement $return)
     {
         $this->return = $return;
+		return $this;
     }
 
-    /**
-     *
-     * @param PhpDocElement $param Adds a new param
-     */
+	/**
+	 *
+	 * @param PhpDocElement $param Adds a new param
+	 * @return $this
+	 */
     public function addParam(PhpDocElement $param)
     {
         $this->params[] = $param;
+		return $this;
     }
 
     /**
      *
      * @param PhpDocElement $throws Adds a new throws
+	 * @return $this
      */
     public function addThrows(PhpDocElement $throws)
     {
         $this->throws[] = $throws;
+		return $this;
     }
 
     /**
      * Sets the description
      *
      * @param string $description
+	 * @return $this
      */
     public function setDescription($description)
     {
         $this->description = $description;
+		return $this;
     }
 }

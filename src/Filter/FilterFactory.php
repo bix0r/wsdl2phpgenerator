@@ -13,15 +13,23 @@ class FilterFactory
      * Returns a filter matching the provided configuration.
      *
      * @param ConfigInterface $config The configuration to create a filter for.
-     * @return FilterInterface A matching filter.
+     * @return FilterInterface[] A matching filter.
      */
     public function create(ConfigInterface $config)
     {
-        $operationNames = $config->get('operationNames');
-        if (!empty($operationNames)) {
-            return new ServiceOperationFilter($config);
-        } else {
-            return new DefaultFilter();
-        }
+        $filterNames = $config->get('serviceFilters');
+
+		$ret = array();
+
+		foreach ($filterNames as $filterName) {
+			$class = 'Wsdl2PhpGenerator\\Filter\\' . $filterName;
+			if (!class_exists($class, false)) {
+				$filename = __DIR__ . DIRECTORY_SEPARATOR . $filterName . '.php';
+				require_once $filename;
+			}
+
+			$ret[] = new $class($config);
+		}
+		return $ret;
     }
 }

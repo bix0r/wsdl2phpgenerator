@@ -184,6 +184,14 @@ class Validator
      */
     public static function validateType($typeName)
     {
+		if (strpos($typeName, '|') !== false) {
+			$items = explode('|', $typeName);
+			$ret = array();
+			foreach ($items as $item) {
+				$ret[] = self::validateType($item);
+			}
+			return implode('|', $ret);
+		}
         if (substr($typeName, -2) == "[]") {
             return $typeName;
         }
@@ -211,12 +219,13 @@ class Validator
                 break;
             case "<anyxml>":
             case "string":
-            case "token":
             case "normalizedstring":
             case "hexbinary":
                 return 'string';
                 break;
             case "datetime":
+            case "date":
+            case "dateTime":
                 return  '\DateTime';
                 break;
             default:

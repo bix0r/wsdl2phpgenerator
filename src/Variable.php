@@ -63,4 +63,14 @@ class Variable
     {
         return $this->nullable;
     }
+
+	/**
+	 * @param string $type
+	 * @return Variable
+	 */
+	public function setType($type)
+	{
+		$this->type = $type;
+		return $this;
+	}
 }

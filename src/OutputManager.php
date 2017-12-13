@@ -73,6 +73,9 @@ class OutputManager
                 throw new Exception('Could not create output directory and it does not exist!');
             }
         }
+		else if ($this->config->get('cleanOutputDir')) {
+			$this->cleanDir($outputDirectory);
+		}
 
         $this->dir = $outputDirectory;
     }
@@ -162,4 +165,15 @@ EOF;
         $file->addFunction($autoloader);
         $file->save($this->dir);
     }
+
+	private function cleanDir($outputDirectory)
+	{
+		$dir = new \DirectoryIterator($outputDirectory);
+		foreach ($dir as $file) {
+			if ($file->getExtension() == 'php') {
+				$f = $outputDirectory . DIRECTORY_SEPARATOR . $file->getFilename();
+				unlink($f);
+			}
+		}
+	}
 }

@@ -34,6 +34,11 @@ class Operation
      */
     private $returns;
 
+	/**
+	 * @var string The name of the soap operation
+	 */
+	private $soapName;
+
     /**
      *
      * @param string $name
@@ -43,7 +48,7 @@ class Operation
      */
     public function __construct($name, $paramStr, $description, $returns)
     {
-        $this->name = $name;
+        $this->name = $this->soapName = $name;
         $this->params = array();
         $this->description = $description;
         $this->returns = $returns;
@@ -113,7 +118,7 @@ class Operation
     /**
      *
      * @param string $name The param to get
-     * @param array An array of Type objects with valid types for typehinting
+     * @param Type[] $validTypes An array of Type objects with valid types for typehinting
      * @return array A array with three keys 'type' => the typehint to use 'name' => the name of the param and 'desc' => A description of the param
      */
     public function getPhpDocParams($name, array $validTypes)
@@ -140,7 +145,8 @@ class Operation
                     $ret['type'] = $type->getPhpIdentifier();
 
                     if ($type instanceof Enum) {
-                        $ret['desc'] = 'Constant: ' . $type->getDatatype() . ' - ' . 'Valid values: ' . $type->getValidValues();
+						$ret['type'] = $ret['type'] . '|' . $type->getDatatype();
+                        $ret['desc'] = 'Constant. Valid values: ' . $type->getValidValues();
                     }
                 }
             }
@@ -189,4 +195,48 @@ class Operation
             }
         }
     }
+
+	public function setParams($value)
+	{
+		$this->params = $value;
+		return $this;
+	}
+
+	/**
+	 * @param string $returns
+	 * @return Operation
+	 */
+	public function setReturns($returns)
+	{
+		$this->returns = $returns;
+		return $this;
+	}
+
+	/**
+	 * @param string $name
+	 * @return Operation
+	 */
+	public function setName($name)
+	{
+		$this->name = $name;
+		return $this;
+	}
+
+	/**
+	 * @param string $soapName
+	 * @return Operation
+	 */
+	public function setSoapName($soapName)
+	{
+		$this->soapName = $soapName;
+		return $this;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getSoapName()
+	{
+		return $this->soapName;
+	}
 }

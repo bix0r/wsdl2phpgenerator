@@ -58,7 +58,7 @@ class PhpClass extends PhpElement
 
     /**
      *
-     * @var array Array of PhpVariable objects
+     * @var PhpVariable[] Array of PhpVariable objects
      * @access private
      */
     private $variables;
@@ -291,4 +291,26 @@ class PhpClass extends PhpElement
     {
         return array_key_exists($identifier, $this->functions);
     }
+
+	/**
+	 * @param string $extends
+	 * @return $this
+	 */
+	public function setExtends($extends)
+	{
+		$this->extends = $extends;
+		return $this;
+	}
+
+	/**
+	 * @param string $identifier
+	 * @return null|PhpVariable
+	 */
+	public function getVariable($identifier)
+	{
+		if (!$this->variableExists($identifier)) {
+			return null;
+		}
+		return $this->variables[$identifier];
+	}
 }

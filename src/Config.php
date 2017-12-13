@@ -79,6 +79,13 @@ class Config implements ConfigInterface
             'classAddConstructor'           => true,
 			'classVariableAccess'			=> 'protected',
 			'soapCallMethod'				=> '__soapCall',
+			'serviceFilters'				=> array(),
+			'filterOptions'					=> array(),
+			'serviceConstructor'			=> '',
+			'servicePrepareClass'			=> '',
+			'typePrepareClasses'			=> '',
+			'cleanOutputDir' 				=> false,
+			'useShortArrays'				=> true,
         ));
 
         // A set of configuration options names and normalizer callables.
@@ -87,6 +94,7 @@ class Config implements ConfigInterface
             'operationNames' => array($this, 'normalizeArray'),
             'soapClientOptions' => array($this, 'normalizeSoapClientOptions'),
             'proxy' => array($this, 'normalizeProxy'),
+			'serviceFilters' => array($this, 'normalizeServiceFilters'),
         );
         // Convert each callable to a closure as that is required by OptionsResolver->setNormalizer().
         $normalizers = array_map(function ($callable) {
@@ -152,6 +160,25 @@ class Config implements ConfigInterface
 
         return $value;
     }
+
+	protected function normalizeServiceFilters(Options $options, $value)
+	{
+		$ret = array();
+		if (!$value) {
+			$ret[] = 'DefaultFilter';
+		}
+		else if (!empty($options['operationNames'])) {
+			$ret[] = 'ServiceOperationFilter';
+		}
+		else if (!is_array($value)) {
+			$ret = [$value];
+		}
+		else {
+			$ret = $value;
+		}
+
+		return $ret;
+	}
 
     /**
      * Normalize the proxy configuration option.

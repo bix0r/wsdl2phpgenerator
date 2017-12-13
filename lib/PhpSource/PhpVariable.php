@@ -62,4 +62,22 @@ class PhpVariable extends PhpElement
 
         return $ret;
     }
+
+	/**
+	 * @param string $initialization
+	 * @return PhpVariable
+	 */
+	public function setInitialization($initialization)
+	{
+		$this->initialization = $initialization;
+		return $this;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getInitialization()
+	{
+		return $this->initialization;
+	}
 }

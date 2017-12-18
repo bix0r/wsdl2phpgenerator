@@ -86,6 +86,9 @@ class Config implements ConfigInterface
 			'typePrepareClasses'			=> '',
 			'cleanOutputDir' 				=> false,
 			'useShortArrays'				=> true,
+			'classmapAccess'				=> 'private',
+			'classmapUse::class'            => false,
+			'addAutoloadFile'				=> true,
         ));
 
         // A set of configuration options names and normalizer callables.

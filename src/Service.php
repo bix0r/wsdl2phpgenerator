@@ -166,26 +166,28 @@ class Service implements ClassGenerator
 		}
 
 		$constructor = $this->config->get('serviceConstructor');
-		if (!($constructor instanceof PhpFunction)) {
-			// Create the constructor
-			$comment = new PhpDocComment();
-			$comment->addParam(PhpDocElementFactory::getParam('array', 'options', 'A array of config values'));
-			$comment->addParam(PhpDocElementFactory::getParam('string', 'wsdl', 'The wsdl file to use'));
+		if ($constructor !== false) {
+			if (!($constructor instanceof PhpFunction)) {
+				// Create the constructor
+				$comment = new PhpDocComment();
+				$comment->addParam(PhpDocElementFactory::getParam('array', 'options', 'A array of config values'));
+				$comment->addParam(PhpDocElementFactory::getParam('string', 'wsdl', 'The wsdl file to use'));
 
-			$source = '
+				$source = '
   foreach (self::$classmap as $key => $value) {
     if (!isset($options[\'classmap\'][$key])) {
       $options[\'classmap\'][$key] = $value;
     }
   }' . PHP_EOL;
-			$source .= '  $options = array_merge(' . var_export($this->config->get('soapClientOptions'), true) . ', $options);' . PHP_EOL;
-			$source .= '  parent::__construct($wsdl, $options);' . PHP_EOL;
+				$source .= '  $options = array_merge(' . var_export($this->config->get('soapClientOptions'), true) . ', $options);' . PHP_EOL;
+				$source .= '  parent::__construct($wsdl, $options);' . PHP_EOL;
 
-			$constructor = new PhpFunction('public', '__construct', 'array $options = array(), $wsdl = \'' . $this->config->get('inputFile') . '\'', $source, $comment);
+				$constructor = new PhpFunction('public', '__construct', 'array $options = array(), $wsdl = \'' . $this->config->get('inputFile') . '\'', $source, $comment);
+			}
+
+			// Add the constructor
+			$this->class->addFunction($constructor);
 		}
-
-        // Add the constructor
-        $this->class->addFunction($constructor);
 
         // Generate the classmap
         $name = 'classmap';
@@ -198,7 +200,15 @@ class Service implements ClassGenerator
                 $init[$typeKey] = $this->config->get('namespaceName') . "\\" . $type->getPhpIdentifier();
             }
         }
-        $var = new PhpVariable('private static', $name, var_export($init, true), $comment);
+		$varInitialization = var_export($init, true);
+        if ($this->config->get('classmapUse::class')) {
+        	$varInitialization = preg_replace("@(\s*=>\s*)'(.*)',@", '\1\2::class,', $varInitialization);
+        	$varInitialization = preg_replace('@\\\\+@', "\\", $varInitialization);
+        	$ns = $this->config->get('namespaceName') . '\\';
+        	$varInitialization = str_replace($ns, '', $varInitialization);
+		}
+		$access = $this->config->get('classmapAccess');
+		$var = new PhpVariable($access . ' static', $name, $varInitialization, $comment);
 
 		$arrayStart = 'array(';
 		$arrayEnd = ')';
